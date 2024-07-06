@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Enums\UserRole;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -44,17 +45,43 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'role' => UserRole::class,
         ];
     }
 
-    public function role(): BelongsTo
+    protected $attributes = [
+        'role' => UserRole::USER,
+    ];
+
+    public function isAdmin(): bool
     {
-        return $this->belongsTo(Role::class);
+        return $this->role === UserRole::ADMIN;
     }
 
-    public function hasRole($roleName): bool
+    public function isSeller(): bool
     {
-        return $this->role->name === $roleName;
+        return $this->role === UserRole::SELLER;
+    }
+
+    public function hasRole(UserRole $role): bool
+    {
+        return $this->role === $role;
+    }
+
+    public static function createAdmin(array $attributes): self
+    {
+        $user = self::create($attributes);
+        $user->role = UserRole::ADMIN;
+        $user->save();
+        return $user;
+    }
+
+    public static function createSeller(array $attributes): self
+    {
+        $user = self::create($attributes);
+        $user->role = UserRole::SELLER;
+        $user->save();
+        return $user;
     }
 
     public function properties() : HasMany

@@ -17,19 +17,10 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->seedRoles();
         $this->seedPropertyTypes();
         $this->seedUsers();
         $this->seedProperties();
         $this->seedPropertyPictures();
-    }
-
-    private function seedRoles(): void
-    {
-        $roles = ["admin", "seller", "buyer"];
-        foreach ($roles as $role) {
-            Role::create(['name' => $role]);
-        }
     }
 
     private function seedPropertyTypes(): void
