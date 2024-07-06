@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\PropertyPicture;
 use App\Models\PropertyType;
 use App\Models\Role;
 use App\Models\User;
@@ -16,31 +17,79 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        $this->seedRoles();
+        $this->seedPropertyTypes();
+        $this->seedUsers();
+        $this->seedProperties();
+        $this->seedPropertyPictures();
+    }
+
+    private function seedRoles(): void
+    {
         $roles = ["admin", "seller", "buyer"];
-        $property_types = ["House", "Appartment", "Building", "Office"];
         foreach ($roles as $role) {
             Role::create(['name' => $role]);
         }
-        foreach ($property_types as $type) {
+    }
+
+    private function seedPropertyTypes(): void
+    {
+        $propertyTypes = ["House", "Apartment", "Building", "Office"];
+        foreach ($propertyTypes as $type) {
             PropertyType::create(['name' => $type]);
         }
+    }
 
-        $me = User::factory()->admin()->create([
+    private function seedUsers(): void
+    {
+        User::factory()->admin()->create([
             'name' => 'Test User',
             'email' => 'test@example.com',
         ]);
 
-        User::factory()->seller()->createMany(10);
+        User::factory()->seller()->count(10)->create();
+        User::factory()->count(20)->create();
+    }
 
-        User::factory()->createMany(20);
+    private function seedProperties(): void
+    {
+        $userIds = User::pluck('id')->toArray();
+        $propertyTypeIds = PropertyType::pluck('id')->toArray();
 
-        $user_ids = User::all()->pluck('id')->toArray();
-        $property_type_ids = PropertyType::all()->pluck('id')->toArray();
-
-        \App\Models\Property::factory()->count(10)->make()->each(function ($property) use ($user_ids, $property_type_ids) {
-            $property->user_id = $user_ids[array_rand($user_ids)];
-            $property->property_type_id = $property_type_ids[array_rand($property_type_ids)];
+        \App\Models\Property::factory()->count(10)->make()->each(function ($property) use ($userIds, $propertyTypeIds) {
+            $property->user_id = $this->getRandomId($userIds);
+            $property->property_type_id = $this->getRandomId($propertyTypeIds);
             $property->save();
         });
     }
+
+    private function seedPropertyPictures(): void
+    {
+        $properties = \App\Models\Property::all();
+
+        foreach ($properties as $property) {
+            $this->createPropertyPictures($property);
+        }
+    }
+
+    private function getRandomId(array $ids): int
+    {
+        return $ids[array_rand($ids)];
+    }
+
+    private function createPropertyPictures(\App\Models\Property $property): void
+    {
+        $numberOfPictures = rand(3, 8);
+
+        for ($i = 0; $i < $numberOfPictures; $i++) {
+            PropertyPicture::factory()->create([
+                'property_id' => $property->id,
+                'title' => "Image {$i} of {$property->name}",
+                'description' => "A beautiful view of property {$property->name}",
+                'is_primary' => $i === 0, // First image is primary
+                'display_order' => $i,
+            ]);
+        }
+    }
+
 }
