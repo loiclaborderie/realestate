@@ -2,13 +2,15 @@
 
 namespace Database\Seeders;
 
+use App\Enums\UserRole;
 use App\Models\PropertyPicture;
 use App\Models\PropertyType;
-use App\Models\Role;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use phpDocumentor\Reflection\DocBlock\Tags\Property;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 class DatabaseSeeder extends Seeder
 {
@@ -17,6 +19,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        $this->seedRoles();
         $this->seedPropertyTypes();
         $this->seedUsers();
         $this->seedProperties();
@@ -33,13 +36,20 @@ class DatabaseSeeder extends Seeder
 
     private function seedUsers(): void
     {
-        User::factory()->admin()->create([
+        $sellerRole = Role::firstWhere('name', UserRole::SELLER->value);
+        $userRole = Role::firstWhere('name', UserRole::USER->value);
+
+        User::factory()->create([
             'name' => 'Test User',
             'email' => 'test@example.com',
-        ]);
+        ])->assignRole(Role::firstWhere('name', UserRole::ADMIN->value));
 
-        User::factory()->seller()->count(10)->create();
-        User::factory()->count(20)->create();
+        User::factory()->count(10)->create()->each(
+            fn (User $user) => $user->assignRole($sellerRole)
+        );
+        User::factory()->count(20)->create()->each(
+            fn (User $user) => $user->assignRole($userRole)
+        );
     }
 
     private function seedProperties(): void
@@ -81,6 +91,20 @@ class DatabaseSeeder extends Seeder
                 'display_order' => $i,
             ]);
         }
+    }
+
+    private function seedRoles(){
+        foreach (UserRole::cases() as $role){
+            Role::create([
+                'name' => $role->value,
+            ]);
+        }
+
+        (Permission::create([
+            'name' => 'property-*'
+        ]))->assignRole(
+            Role::firstWhere('name', UserRole::SELLER->value)
+        );
     }
 
 }
