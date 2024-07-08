@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Auth;
 
 use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
-use App\Models\Role;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
@@ -14,6 +13,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Inertia\Inertia;
 use Inertia\Response;
+use Spatie\Permission\Models\Role;
 
 class RegisteredSellerController extends Controller
 {
@@ -42,10 +42,7 @@ class RegisteredSellerController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-        ]);
-
-        $user->role = UserRole::SELLER;
-        $user->save();
+        ])->assignRole(Role::firstWhere('name', UserRole::SELLER->value));
 
         event(new Registered($user));
 
