@@ -54,7 +54,7 @@ class PropertyPolicy
      */
     public function restore(User $user, Property $property): bool
     {
-        //
+        return false;
     }
 
     /**
@@ -62,6 +62,6 @@ class PropertyPolicy
      */
     public function forceDelete(User $user, Property $property): bool
     {
-        //
+        return false;
     }
 }
