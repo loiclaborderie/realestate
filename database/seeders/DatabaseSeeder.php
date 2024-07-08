@@ -100,11 +100,20 @@ class DatabaseSeeder extends Seeder
             ]);
         }
 
-        (Permission::create([
-            'name' => 'property-*'
-        ]))->assignRole(
-            Role::firstWhere('name', UserRole::SELLER->value)
-        );
+        Permission::create(['name' => 'view-properties']);
+        Permission::create(['name' => 'view-property-details']);
+        Permission::create(['name' => 'create-property']);
+        Permission::create(['name' => 'edit-own-property']);
+        Permission::create(['name' => 'delete-own-property']);
+
+        Role::firstWhere('name', UserRole::USER->value)->givePermissionTo(['view-properties', 'view-property-details']);
+        Role::firstWhere('name', UserRole::SELLER->value)->givePermissionTo([
+            'view-properties',
+            'view-property-details',
+            'create-property',
+            'edit-own-property',
+            'delete-own-property'
+        ]);
     }
 
 }
