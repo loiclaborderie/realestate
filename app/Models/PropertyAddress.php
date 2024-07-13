@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class PropertyAddress extends Model
 {
@@ -13,6 +13,7 @@ class PropertyAddress extends Model
     protected $fillable = [
         'country',
         'city',
+        'state',
         'street',
         'zip',
         'unit_number',
@@ -20,8 +21,8 @@ class PropertyAddress extends Model
         'longitude'
     ];
 
-    public function property() : BelongsTo
+    public function property() : HasOne
     {
-        return $this->BelongsTo(Property::class);
+        return $this->HasOne(Property::class);
     }
 }
