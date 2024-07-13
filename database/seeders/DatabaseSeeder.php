@@ -29,8 +29,8 @@ class DatabaseSeeder extends Seeder
     private function seedPropertyTypes(): void
     {
         $propertyTypes = ["House", "Apartment", "Building", "Office"];
-        foreach ($propertyTypes as $type) {
-            PropertyType::create(['name' => $type]);
+        foreach (\App\Enums\PropertyType::cases() as $type) {
+            PropertyType::create(['name' => $type->value]);
         }
     }
 
