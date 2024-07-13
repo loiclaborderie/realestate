@@ -27,6 +27,9 @@ return [
     'resend' => [
         'key' => env('RESEND_KEY'),
     ],
+    'geocode_maps' => [
+        'api_key' => env('GEOCODE_MAPS_API')
+    ],
 
     'slack' => [
         'notifications' => [
