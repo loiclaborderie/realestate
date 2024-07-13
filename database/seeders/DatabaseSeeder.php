@@ -103,6 +103,7 @@ class DatabaseSeeder extends Seeder
         Permission::create(['name' => 'view-properties']);
         Permission::create(['name' => 'view-property-details']);
         Permission::create(['name' => 'create-property']);
+        Permission::create(['name' => 'view-owned-properties']);
         Permission::create(['name' => 'edit-own-property']);
         Permission::create(['name' => 'delete-own-property']);
 
@@ -111,6 +112,7 @@ class DatabaseSeeder extends Seeder
             'view-properties',
             'view-property-details',
             'create-property',
+            'view-owned-properties',
             'edit-own-property',
             'delete-own-property'
         ]);
