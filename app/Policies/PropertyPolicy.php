@@ -4,7 +4,6 @@ namespace App\Policies;
 
 use App\Models\Property;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 use Illuminate\Support\Facades\Auth;
 
 class PropertyPolicy
@@ -47,21 +46,5 @@ class PropertyPolicy
     public function delete(User $user, Property $property): bool
     {
         return $user->hasPermissionTo('delete-own-property') && $property->owner()->is(Auth::user());
-    }
-
-    /**
-     * Determine whether the user can restore the model.
-     */
-    public function restore(User $user, Property $property): bool
-    {
-        return false;
-    }
-
-    /**
-     * Determine whether the user can permanently delete the model.
-     */
-    public function forceDelete(User $user, Property $property): bool
-    {
-        return false;
     }
 }

@@ -41,25 +41,36 @@ Route::name('property.')->group(function(){
     Route::get('/properties', IndexController::class)
         ->name('index');
 
+    Route::middleware('auth')->group(function (){
+
     Route::get('/property/create', CreateController::class)
         ->name('create')
-        ->middleware(['permission:create-property', 'can:create,App\Models\Property']);
+        ->middleware(['permission:create-property']);
 
     Route::post('/property/create', StoreController::class)
         ->name('store')
-        ->middleware(['permission:create-property', 'can:create,App\Models\Property']);
+        ->middleware(['permission:create-property']);
 
-    Route::get('/property/{property}/edit', EditController::class)
+    Route::get('/property/edit/{property}', EditController::class)
         ->name('edit')
-        ->middleware(['permission:edit-own-property', 'can:update,property']);
+        ->middleware('can:update,property');
 
-    Route::post('/property/{property}/edit', UpdateController::class)
+    Route::post('/property/edit/{property}', UpdateController::class)
         ->name('update')
-        ->middleware(['permission:edit-own-property', 'can:update,property']);
+        ->middleware(['can:update,property']);
+
+    Route::get('/address/edit/{address}', \App\Http\Controllers\PropertyAddress\EditController::class)
+        ->name('address.edit')
+        ->middleware('can:update,address');
+
+    Route::post('/address/edit/{address}', \App\Http\Controllers\PropertyAddress\UpdateController::class)
+        ->name('address.update')
+        ->middleware(['can:update,address']);
 
     Route::delete('/property/{property}/delete', DestroyController::class)
         ->name('destroy')
-        ->middleware(['permission:delete-own-property', 'can:delete,property']);
+        ->middleware(['can:delete,property']);
+    });
 
     Route::get('/property/{property}', ShowController::class)
         ->name('show');
