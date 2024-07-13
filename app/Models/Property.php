@@ -21,7 +21,9 @@ class Property extends Model
         'building_area',
         'land_area',
         'sold_at',
-        'property_address_id'
+        'property_address_id',
+        'property_type_id',
+        'user_id'
     ];
     public function owner() : BelongsTo
     {
@@ -33,9 +35,9 @@ class Property extends Model
         return $this->belongsTo(PropertyType::class, 'property_type_id');
     }
 
-    public function address() : HasOne
+    public function address() : BelongsTo
     {
-        return $this->HasOne(PropertyAddress::class);
+        return $this->BelongsTo(PropertyAddress::class, 'property_address_id');
     }
 
     public function pictures() : HasMany
